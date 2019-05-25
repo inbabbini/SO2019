@@ -1,0 +1,23 @@
+#!/bin/sh
+# El mount de /dev que estaba aca no es necesario
+/bin/mount -t proc proc /proc
+/bin/mount -o remount,rw /
+/bin/mount -p /dev/pts /dev/shm
+/bin/mount -a
+/sbin/swapon -a
+/bin/ln -sf /proc/self/fd /dev/fd
+/bin/ln -sf /proc/self/fd/0 /dev/stdin
+/bin/ln -sf /proc/self/fd/1 /dev/stdout
+/bin/ln -sf /proc/self/fd/2 /dev/stderr
+/bin/hostname -F /etc/hostname
+
+#code
+#montar rootfs en el disco parametrizado
+/bin/mount -t ext4 /dev/sda /mnt/rootfs
+
+#Mueve el punto de montaje de los dispositivos del /dev (initframs) al /rootfs/dev (rootfs)
+/bin/mount --move /dev /mnt/rootfs/dev #Si no esta switch_root no encuentra nada en '/dev'
+
+exec switch_root /mnt/rootfs /sbin/init "$@"
+
+# code
